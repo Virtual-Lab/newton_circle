@@ -9,9 +9,13 @@ var xM =300, yM = 300; // position of the centre of the circles
 var d_phi = (2*Math.PI)/n_tet;
 var anzahl = 7 * n;
 var gfreq = 220;
-var chooseOsczil = document.getElementById("osc");
-var inputFreq = document.getElementById("gfreq");
-var submitFreq = document.getElementById("setFreq")
+
+var soundFreq = document.getElementById("soundFreq");
+var soundFreqSet = document.getElementById("soundFreqSet");
+var soundOn = document.getElementById("soundOn");
+var soundOff = document.getElementById("soundOff");
+
+var audio = true;
 
 var SDot = class {
 
@@ -65,6 +69,55 @@ function setupPoints() {
   
 }
 
+function soundSetting () {
+
+  selection.addEventListener("submit", function(event) {
+     event.preventDefault()}, false);
+
+  soundFreq.addEventListener("input", function(event) {
+    event.preventDefault();
+    gfreq = event.target.value;
+    setFreq();
+    soundFreqSet.value = gfreq ;
+    console.log("BaseFreq: ", gfreq )
+  }, false);
+
+  soundFreqSet.addEventListener("input", function(event) {
+    event.preventDefault();
+    value = event.target.value;
+    gfreq  = value;
+    setFreq();
+    soundFreq.value = value;
+  }, false);
+
+  soundOn.onclick = function () { 
+    audioSwitch();
+  };
+    
+}
+
+function audioSwitch() {
+
+  if (!audio) {
+    for (var k=0; k < anzahl; k++) { 
+      sdots[k].osc = new Sound(gfreq * sdots[k].freq);
+    };
+    audio = true;
+    soundOn.value = "on";
+  } else {
+
+    for (var k=0; k < anzahl; k++) { 
+      sdots[k].osc = undefined;
+    };
+
+    delete window['Sound'];
+
+    audio = false;
+    soundOn.value = "off";
+  }
+
+}
+
 function setOsc (event) {
 
   event.preventDefault();
@@ -80,13 +133,10 @@ function setOsc (event) {
   }
 }
 
-function setFreq(event) {
-
-  event.preventDefault();
-  gfreq = inputFreq.value;
+function setFreq(value) {
 
   for (var k=0; k < anzahl; k++) { 
-    sdots[k].osc.freq(gfreq * sdots[k].freq);
+    sdots[k].osc.setFrequency(gfreq * sdots[k].freq);
   };
   
 }
@@ -96,6 +146,7 @@ function setup() {
   var Diagram = createCanvas(600, 600);
   Diagram.parent("diagram");
   Synthesizer.init();
+  soundSetting();
 
   ellipseMode(RADIUS);
 
@@ -104,8 +155,6 @@ function setup() {
 
   // chooseOsczil.addEventListener('change', setOsc, false);
   // chooseOsczil.selectedindex = "1";
-
-  submitFreq.addEventListener('click', setFreq, false)
   
   console.log(sdots, scale, scale.length);
 
