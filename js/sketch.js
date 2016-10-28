@@ -95,7 +95,7 @@ function setup() {
 
   var Diagram = createCanvas(600, 600);
   Diagram.parent("diagram");
-  Synth.init();
+  Synthesizer.init();
 
   ellipseMode(RADIUS);
 
